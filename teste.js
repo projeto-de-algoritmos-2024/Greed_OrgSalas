@@ -17,13 +17,26 @@ class SistemaAgendamento {
 
         return !(fim1 <= inicio2 || fim2 <= inicio1);
     }
+
+    adicionarAula(novaAula) {
+        if (this.horarioParaMinutos(novaAula.horarioInicio) >= this.horarioParaMinutos(novaAula.horarioFim)) {
+            return {
+                sucesso: false,
+                mensagem: "O horário de início deve ser anterior ao horário de fim"
+            };
+        }
+
+        this.aulas.push(novaAula);
+        return {
+            sucesso: true,
+            mensagem: "Aula adicionada com sucesso"
+        };
+    }
 }
 
 module.exports = SistemaAgendamento;
 
 const sistema = new SistemaAgendamento();
-console.log(sistema.horarioParaMinutos("10:30"));
-
-const aula1 = { horarioInicio: "10:00", horarioFim: "12:00" };
-const aula2 = { horarioInicio: "11:00", horarioFim: "13:00" };
-console.log(sistema.temConflito(aula1, aula2)); 
+const resultado = sistema.adicionarAula({ nome: "Matemática", horarioInicio: "10:00", horarioFim: "12:00" });
+console.log(resultado); 
+console.log(sistema.aulas); 
