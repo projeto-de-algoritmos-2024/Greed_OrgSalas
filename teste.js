@@ -22,16 +22,38 @@ class SistemaAgendamento {
         if (this.horarioParaMinutos(novaAula.horarioInicio) >= this.horarioParaMinutos(novaAula.horarioFim)) {
             return {
                 sucesso: false,
-                mensagem: "O horário de início deve ser anterior ao horário de fim"
+                mensagem: "O horario de inicio deve ser anterior ao horario de fim"
             };
         }
-
+    
+        let salaAlocada = false;
+        for (let i = 0; i < this.salas.length; i++) {
+            let podeAlocar = true;
+    
+            for (const aula of this.salas[i]) {
+                if (this.temConflito(novaAula, aula)) {
+                    podeAlocar = false;
+                    break;
+                }
+            }
+    
+            if (podeAlocar) {
+                this.salas[i].push(novaAula);
+                salaAlocada = true;
+                break;
+            }
+        }
+    
+        if (!salaAlocada) {
+            this.salas.push([novaAula]);
+        }
+    
         this.aulas.push(novaAula);
         return {
             sucesso: true,
-            mensagem: "Aula adicionada com sucesso"
+            mensagem: Aula adicionnada com sucesso na sala ${this.salas.length}
         };
-    }
+    } 
 }
 
 module.exports = SistemaAgendamento;
@@ -40,3 +62,5 @@ const sistema = new SistemaAgendamento();
 const resultado = sistema.adicionarAula({ nome: "Matemática", horarioInicio: "10:00", horarioFim: "12:00" });
 console.log(resultado); 
 console.log(sistema.aulas); 
+
+
