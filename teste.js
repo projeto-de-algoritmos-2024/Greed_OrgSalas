@@ -51,7 +51,7 @@ class SistemaAgendamento {
         this.aulas.push(novaAula);
         return {
             sucesso: true,
-            mensagem: Aula adicionnada com sucesso na sala ${this.salas.length}
+            mensagem: "Aula adicionnada com sucesso na sala ${this.salas.length}"
         };
     } 
 }
