@@ -22,45 +22,49 @@ class SistemaAgendamento {
         if (this.horarioParaMinutos(novaAula.horarioInicio) >= this.horarioParaMinutos(novaAula.horarioFim)) {
             return {
                 sucesso: false,
-                mensagem: "O horario de inicio deve ser anterior ao horario de fim"
+                mensagem: "O horario de inicio deve ser anterior ao horario de fim."
             };
         }
-    
-        let salaAlocada = false;
-        for (let i = 0; i < this.salas.length; i++) {
-            let podeAlocar = true;
-    
-            for (const aula of this.salas[i]) {
-                if (this.temConflito(novaAula, aula)) {
-                    podeAlocar = false;
+
+        this.aulas.push(novaAula);
+
+        this.aulas.sort((a, b) => this.horarioParaMinutos(a.horarioInicio) - this.horarioParaMinutos(b.horarioInicio));
+
+        this.salas = [];
+
+        for (const aula of this.aulas) {
+            let salaAlocada = false;
+
+            for (let i = 0; i < this.salas.length; i++) {
+                const ultimaAulaDaSala = this.salas[i][this.salas[i].length - 1];
+
+                if (!this.temConflito(ultimaAulaDaSala, aula)) {
+                    this.salas[i].push(aula);
+                    salaAlocada = true;
                     break;
                 }
             }
-    
-            if (podeAlocar) {
-                this.salas[i].push(novaAula);
-                salaAlocada = true;
-                break;
+
+            if (!salaAlocada) {
+                this.salas.push([aula]);
             }
         }
-    
-        if (!salaAlocada) {
-            this.salas.push([novaAula]);
-        }
-    
-        this.aulas.push(novaAula);
+
         return {
             sucesso: true,
-            mensagem: "Aula adicionnada com sucesso na sala ${this.salas.length}"
+            mensagem: `Aula adicionada com sucesso. Total de salas usadas: ${this.salas.length}`
         };
-    } 
+    }
 }
 
 module.exports = SistemaAgendamento;
 
 const sistema = new SistemaAgendamento();
-const resultado = sistema.adicionarAula({ nome: "Matemática", horarioInicio: "10:00", horarioFim: "12:00" });
-console.log(resultado); 
-console.log(sistema.aulas); 
+const resultado1 = sistema.adicionarAula({ nome: "Matematica", horarioInicio: "10:00", horarioFim: "12:00" });
+console.log(resultado1);
+const resultado2 = sistema.adicionarAula({ nome: "Fisica", horarioInicio: "11:00", horarioFim: "13:00" });
+console.log(resultado2);
+const resultado3 = sistema.adicionarAula({ nome: "Quimica", horarioInicio: "12:00", horarioFim: "14:00" });
+console.log(resultado3);
 
-
+console.log("Salas:", sistema.salas);
