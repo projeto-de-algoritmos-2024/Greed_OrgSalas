@@ -1,3 +1,13 @@
+
+class Aula {
+    constructor(nome, horarioInicio, horarioFim) {
+        this.nome = nome;
+        this.horarioInicio = horarioInicio;
+        this.horarioFim = horarioFim;
+        this.sala = null;
+    }
+}
+
 class SistemaAgendamento {
     constructor() {
         this.aulas = [];
@@ -57,14 +67,54 @@ class SistemaAgendamento {
     }
 }
 
-module.exports = SistemaAgendamento;
+const SistemaAgendamento = new SistemaAgendamento();
 
-const sistema = new SistemaAgendamento();
-const resultado1 = sistema.adicionarAula({ nome: "Matematica", horarioInicio: "10:00", horarioFim: "12:00" });
-console.log(resultado1);
-const resultado2 = sistema.adicionarAula({ nome: "Fisica", horarioInicio: "11:00", horarioFim: "13:00" });
-console.log(resultado2);
-const resultado3 = sistema.adicionarAula({ nome: "Quimica", horarioInicio: "12:00", horarioFim: "14:00" });
-console.log(resultado3);
+const formularioAula = document.getElementById('formularioAula');
+const alertMessage = document.getElementById('mensagemAviso');
+const gradeHorarios = document.getElementById('gradeHorarios');
 
-console.log("Salas:", sistema.salas);
+function atualizarGrade() {
+    gradeHorarios.innerHTML = '';
+    const aulas = SistemaAgendamento.getAulas();
+    
+    const aulasPorSala = {};
+    aulas.forEach(aula => {
+        if (!aulasPorSala[aula.sala]) {
+            aulasPorSala[aula.sala] = [];
+        }
+        aulasPorSala[aula.sala].push(aula);
+    });
+
+    Object.keys(aulasPorSala).forEach(numeroSala => {
+        const cardSala = document.createElement('div');
+        cardSala.className = 'card-sala';
+
+        const cabecalhoSala = document.createElement('div');
+        cabecalhoSala.className = 'cabecalho-sala';
+        cabecalhoSala.innerHTML = `
+            <div class="titulo-sala">Sala ${parseInt(numeroSala) + 1}</div>
+        `;
+        
+        cardSala.appendChild(cabecalhoSala);
+
+        const aulasNaSala = aulasPorSala[numeroSala];
+        aulasNaSala.forEach(aula => {
+            const divAula = document.createElement('div');
+            divAula.className = 'item-aula';
+            divAula.innerHTML = `
+                <div class="nome-aula">${aula.nome}</div>
+                <div class="horario-aula">${aula.horarioInicio} - ${aula.horarioFim}</div>
+            `;
+            cardSala.appendChild(divAula);
+        });
+
+        gradeHorarios.appendChild(cardSala);
+    });
+
+    if (Object.keys(aulasPorSala).length === 0) {
+        const mensagemVazia = document.createElement('div');
+        mensagemVazia.className = 'sala-vazia';
+        mensagemVazia.textContent = 'Nenhuma aula agendada';
+        gradeHorarios.appendChild(mensagemVazia);
+    }
+}
