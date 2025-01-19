@@ -33,7 +33,7 @@ h2 {
     padding: 20px;
 }
 
-.formulario {
+.formulario, .secao-horarios {
     background: white;
     padding: 25px;
     border-radius: 8px;
@@ -64,4 +64,16 @@ input:focus {
     outline: none;
     border-color: #3498db;
     box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+}
+
+.container-horarios{
+    overflow-x: auto;
+    padding: 20px 0;
+}
+
+.grade-salas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
 }
