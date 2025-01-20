@@ -21,12 +21,20 @@
                         <input type="text" id="className" required>
                     </div>
                     <div class="grupo-formulario">
-                        <label for="startTime">Horário de Início:</label>
-                        <input type="time" id="startTime" required>
+                        <label for="startTimeHour">Horário de Início:</label>
+                        <div class="time-input">
+                            <input type="number" id="startTimeHour" min="0" max="23" required placeholder="HH">
+                            <span>:</span>
+                            <input type="number" id="startTimeMinute" min="0" max="59" required placeholder="MM">
+                        </div>
                     </div>
                     <div class="grupo-formulario">
-                        <label for="endTime">Horário de Fim:</label>
-                        <input type="time" id="endTime" required>
+                        <label for="endTimeHour">Horário de Fim:</label>
+                        <div class="time-input">
+                            <input type="number" id="endTimeHour" min="0" max="23" required placeholder="HH">
+                            <span>:</span>
+                            <input type="number" id="endTimeMinute" min="0" max="59" required placeholder="MM">
+                        </div>
                     </div>
                     <button type="submit">Adicionar Aula</button>
                 </form>

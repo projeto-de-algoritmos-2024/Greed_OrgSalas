@@ -19,6 +19,15 @@ class SistemaAgendamento {
         return this.aulas;
     }
 
+    validarHorario(horario) {
+        const [horas, minutos] = horario.split(':').map(Number);
+        return horas >= 0 && horas <= 23 && minutos >= 0 && minutos < 60;
+    }
+
+    formatarHorario(horas, minutos) {
+        return `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}`;
+    }
+
     horarioParaMinutos(horario) {
         const [horas, minutos] = horario.split(':').map(Number);
         return horas * 60 + minutos;
@@ -40,6 +49,13 @@ class SistemaAgendamento {
     }
 
     adicionarAula(novaAula) {
+        if (!this.validarHorario(novaAula.horarioInicio) || !this.validarHorario(novaAula.horarioFim)) {
+            return {
+                sucesso: false,
+                mensagem: "Horário inválido. As horas devem estar entre 00 e 23, e os minutos entre 00 e 59."
+            };
+        }
+
         const inicioAula = this.horarioParaMinutos(novaAula.horarioInicio);
         const fimAula = this.horarioParaMinutos(novaAula.horarioFim);
         const inicioPermitido = this.horaInicio * 60;
@@ -111,31 +127,60 @@ const formularioAula = document.getElementById('formularioAula');
 const mensagemAviso = document.getElementById('mensagemAviso');
 const gradeHorarios = document.getElementById('gradeHorarios');
 
-function criarMarcadoresHora(timeline, horaInicio, horaFim) {
-    const [horaInicioNum] = horaInicio.split(':').map(Number);
-    const [horaFimNum] = horaFim.split(':').map(Number);
+// Inputs de horário
+const startTimeHour = document.getElementById('startTimeHour');
+const startTimeMinute = document.getElementById('startTimeMinute');
+const endTimeHour = document.getElementById('endTimeHour');
+const endTimeMinute = document.getElementById('endTimeMinute');
+
+// Função para validar e formatar input numérico
+function validarInputNumerico(input, min, max) {
+    let valor = parseInt(input.value);
     
-    for (let hora = horaInicioNum; hora <= horaFimNum; hora++) {
+    if (isNaN(valor)) {
+        input.value = '';
+        return false;
+    }
+
+    if (valor < min) {
+        input.value = min;
+        valor = min;
+    } else if (valor > max) {
+        input.value = max;
+        valor = max;
+    }
+
+    input.value = valor.toString().padStart(2, '0');
+    return true;
+}
+
+// Adiciona validação em tempo real
+startTimeHour.addEventListener('input', () => validarInputNumerico(startTimeHour, 0, 23));
+startTimeMinute.addEventListener('input', () => validarInputNumerico(startTimeMinute, 0, 59));
+endTimeHour.addEventListener('input', () => validarInputNumerico(endTimeHour, 0, 23));
+endTimeMinute.addEventListener('input', () => validarInputNumerico(endTimeMinute, 0, 59));
+
+function criarMarcadoresHora(timeline, horaInicio, horaFim) {
+    const inicioMinutos = sistemaAgendamento.horarioParaMinutos(horaInicio);
+    const fimMinutos = sistemaAgendamento.horarioParaMinutos(horaFim);
+    
+    for (let minutos = inicioMinutos; minutos <= fimMinutos; minutos += 60) {
         const marcador = document.createElement('div');
         marcador.className = 'timeline-hora';
-        marcador.textContent = `${hora.toString().padStart(2, '0')}:00`;
-        const porcentagem = ((hora - horaInicioNum) / (horaFimNum - horaInicioNum)) * 100;
+        marcador.textContent = sistemaAgendamento.minutosParaHorario(minutos);
+        const porcentagem = ((minutos - inicioMinutos) / (fimMinutos - inicioMinutos)) * 100;
         marcador.style.left = `${porcentagem}%`;
         timeline.appendChild(marcador);
     }
 }
 
 function posicionarAulaNaTimeline(aula, timeline, periodoInicio, periodoFim) {
-    const [horaInicioPeriodo, minInicioPeriodo] = periodoInicio.split(':').map(Number);
-    const [horaFimPeriodo, minFimPeriodo] = periodoFim.split(':').map(Number);
-    const inicioPeriodoMinutos = horaInicioPeriodo * 60 + minInicioPeriodo;
-    const fimPeriodoMinutos = horaFimPeriodo * 60 + minFimPeriodo;
+    const inicioPeriodoMinutos = sistemaAgendamento.horarioParaMinutos(periodoInicio);
+    const fimPeriodoMinutos = sistemaAgendamento.horarioParaMinutos(periodoFim);
     const duracaoPeriodo = fimPeriodoMinutos - inicioPeriodoMinutos;
-    
-    const [horaInicioAula, minInicioAula] = aula.horarioInicio.split(':').map(Number);
-    const [horaFimAula, minFimAula] = aula.horarioFim.split(':').map(Number);
-    const inicioAulaMinutos = horaInicioAula * 60 + minInicioAula;
-    const fimAulaMinutos = horaFimAula * 60 + minFimAula;
+
+    const inicioAulaMinutos = sistemaAgendamento.horarioParaMinutos(aula.horarioInicio);
+    const fimAulaMinutos = sistemaAgendamento.horarioParaMinutos(aula.horarioFim);
     
     const posicaoInicio = ((inicioAulaMinutos - inicioPeriodoMinutos) / duracaoPeriodo) * 100;
     const largura = ((fimAulaMinutos - inicioAulaMinutos) / duracaoPeriodo) * 100;
@@ -210,8 +255,22 @@ formularioAula.addEventListener('submit', (e) => {
     e.preventDefault();
 
     const nomeAula = document.getElementById('className').value;
-    const horarioInicio = document.getElementById('startTime').value;
-    const horarioFim = document.getElementById('endTime').value;
+    
+    // Pega os valores dos inputs de hora e minuto
+    const horaInicio = parseInt(startTimeHour.value);
+    const minutoInicio = parseInt(startTimeMinute.value);
+    const horaFim = parseInt(endTimeHour.value);
+    const minutoFim = parseInt(endTimeMinute.value);
+
+    // Valida se todos os valores são números válidos
+    if (isNaN(horaInicio) || isNaN(minutoInicio) || isNaN(horaFim) || isNaN(minutoFim)) {
+        exibirMensagem("Por favor, preencha todos os campos de horário corretamente.", false);
+        return;
+    }
+
+    // Formata os horários
+    const horarioInicio = sistemaAgendamento.formatarHorario(horaInicio, minutoInicio);
+    const horarioFim = sistemaAgendamento.formatarHorario(horaFim, minutoFim);
 
     const novaAula = new Aula(nomeAula, horarioInicio, horarioFim);
     const resultado = sistemaAgendamento.adicionarAula(novaAula);
