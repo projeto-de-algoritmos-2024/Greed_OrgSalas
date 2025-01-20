@@ -24,6 +24,12 @@ class SistemaAgendamento {
         return horas * 60 + minutos;
     }
 
+    minutosParaHorario(minutos) {
+        const horas = Math.floor(minutos / 60);
+        const mins = minutos % 60;
+        return `${horas.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+    }
+
     temConflito(aula1, aula2) {
         const inicio1 = this.horarioParaMinutos(aula1.horarioInicio);
         const fim1 = this.horarioParaMinutos(aula1.horarioFim);
@@ -84,6 +90,19 @@ class SistemaAgendamento {
             mensagem: `Aula adicionada com sucesso. Total de salas usadas: ${this.salas.length}`
         };
     }
+
+    calcularPeriodoSala(aulasNaSala) {
+        let minInicio = Math.min(...aulasNaSala.map(aula => this.horarioParaMinutos(aula.horarioInicio)));
+        let maxFim = Math.max(...aulasNaSala.map(aula => this.horarioParaMinutos(aula.horarioFim)));
+        
+        minInicio = Math.max(this.horaInicio * 60, minInicio - 60);
+        maxFim = Math.min(this.horaFim * 60, maxFim + 60);
+        
+        return {
+            inicio: this.minutosParaHorario(minInicio),
+            fim: this.minutosParaHorario(maxFim)
+        };
+    }
 }
 
 const sistemaAgendamento = new SistemaAgendamento();
@@ -92,33 +111,34 @@ const formularioAula = document.getElementById('formularioAula');
 const mensagemAviso = document.getElementById('mensagemAviso');
 const gradeHorarios = document.getElementById('gradeHorarios');
 
-function criarMarcadoresHora(timeline) {
-    const horaInicio = sistemaAgendamento.horaInicio;
-    const horaFim = sistemaAgendamento.horaFim;
+function criarMarcadoresHora(timeline, horaInicio, horaFim) {
+    const [horaInicioNum] = horaInicio.split(':').map(Number);
+    const [horaFimNum] = horaFim.split(':').map(Number);
     
-    for (let hora = horaInicio; hora <= horaFim; hora++) {
+    for (let hora = horaInicioNum; hora <= horaFimNum; hora++) {
         const marcador = document.createElement('div');
         marcador.className = 'timeline-hora';
         marcador.textContent = `${hora.toString().padStart(2, '0')}:00`;
-        const porcentagem = ((hora - horaInicio) / (horaFim - horaInicio)) * 100;
+        const porcentagem = ((hora - horaInicioNum) / (horaFimNum - horaInicioNum)) * 100;
         marcador.style.left = `${porcentagem}%`;
         timeline.appendChild(marcador);
     }
 }
 
-function posicionarAulaNaTimeline(aula, timeline) {
-    const horaInicio = sistemaAgendamento.horaInicio;
-    const horaFim = sistemaAgendamento.horaFim;
-    const periodoTotal = horaFim - horaInicio;
+function posicionarAulaNaTimeline(aula, timeline, periodoInicio, periodoFim) {
+    const [horaInicioPeriodo, minInicioPeriodo] = periodoInicio.split(':').map(Number);
+    const [horaFimPeriodo, minFimPeriodo] = periodoFim.split(':').map(Number);
+    const inicioPeriodoMinutos = horaInicioPeriodo * 60 + minInicioPeriodo;
+    const fimPeriodoMinutos = horaFimPeriodo * 60 + minFimPeriodo;
+    const duracaoPeriodo = fimPeriodoMinutos - inicioPeriodoMinutos;
     
     const [horaInicioAula, minInicioAula] = aula.horarioInicio.split(':').map(Number);
     const [horaFimAula, minFimAula] = aula.horarioFim.split(':').map(Number);
+    const inicioAulaMinutos = horaInicioAula * 60 + minInicioAula;
+    const fimAulaMinutos = horaFimAula * 60 + minFimAula;
     
-    const inicioDecimal = horaInicioAula + (minInicioAula / 60);
-    const fimDecimal = horaFimAula + (minFimAula / 60);
-    
-    const posicaoInicio = ((inicioDecimal - horaInicio) / periodoTotal) * 100;
-    const largura = ((fimDecimal - inicioDecimal) / periodoTotal) * 100;
+    const posicaoInicio = ((inicioAulaMinutos - inicioPeriodoMinutos) / duracaoPeriodo) * 100;
+    const largura = ((fimAulaMinutos - inicioAulaMinutos) / duracaoPeriodo) * 100;
     
     const aulaElement = document.createElement('div');
     aulaElement.className = 'timeline-item';
@@ -157,11 +177,13 @@ function atualizarGrade() {
         const timeline = document.createElement('div');
         timeline.className = 'timeline';
         
-        criarMarcadoresHora(timeline);
-        
         const aulasNaSala = aulasPorSala[numeroSala];
+        const periodo = sistemaAgendamento.calcularPeriodoSala(aulasNaSala);
+        
+        criarMarcadoresHora(timeline, periodo.inicio, periodo.fim);
+        
         aulasNaSala.forEach(aula => {
-            posicionarAulaNaTimeline(aula, timeline);
+            posicionarAulaNaTimeline(aula, timeline, periodo.inicio, periodo.fim);
         });
 
         cardSala.appendChild(timeline);
