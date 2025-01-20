@@ -11,6 +11,8 @@ class SistemaAgendamento {
     constructor() {
         this.aulas = [];
         this.salas = [];
+        this.horaInicio = 8;
+        this.horaFim = 20;
     }
 
     getAulas() {
@@ -32,15 +34,26 @@ class SistemaAgendamento {
     }
 
     adicionarAula(novaAula) {
-        if (this.horarioParaMinutos(novaAula.horarioInicio) >= this.horarioParaMinutos(novaAula.horarioFim)) {
+        const inicioAula = this.horarioParaMinutos(novaAula.horarioInicio);
+        const fimAula = this.horarioParaMinutos(novaAula.horarioFim);
+        const inicioPermitido = this.horaInicio * 60;
+        const fimPermitido = this.horaFim * 60;
+
+        if (inicioAula >= fimAula) {
             return {
                 sucesso: false,
                 mensagem: "O horário de início deve ser anterior ao horário de fim."
             };
         }
 
-        this.aulas.push(novaAula);
+        if (inicioAula < inicioPermitido || fimAula > fimPermitido) {
+            return {
+                sucesso: false,
+                mensagem: `As aulas devem estar entre ${this.horaInicio}:00 e ${this.horaFim}:00.`
+            };
+        }
 
+        this.aulas.push(novaAula);
         this.aulas.sort((a, b) => this.horarioParaMinutos(a.horarioInicio) - this.horarioParaMinutos(b.horarioInicio));
 
         this.salas = [];
@@ -79,6 +92,44 @@ const formularioAula = document.getElementById('formularioAula');
 const mensagemAviso = document.getElementById('mensagemAviso');
 const gradeHorarios = document.getElementById('gradeHorarios');
 
+function criarMarcadoresHora(timeline) {
+    const horaInicio = sistemaAgendamento.horaInicio;
+    const horaFim = sistemaAgendamento.horaFim;
+    
+    for (let hora = horaInicio; hora <= horaFim; hora++) {
+        const marcador = document.createElement('div');
+        marcador.className = 'timeline-hora';
+        marcador.textContent = `${hora.toString().padStart(2, '0')}:00`;
+        const porcentagem = ((hora - horaInicio) / (horaFim - horaInicio)) * 100;
+        marcador.style.left = `${porcentagem}%`;
+        timeline.appendChild(marcador);
+    }
+}
+
+function posicionarAulaNaTimeline(aula, timeline) {
+    const horaInicio = sistemaAgendamento.horaInicio;
+    const horaFim = sistemaAgendamento.horaFim;
+    const periodoTotal = horaFim - horaInicio;
+    
+    const [horaInicioAula, minInicioAula] = aula.horarioInicio.split(':').map(Number);
+    const [horaFimAula, minFimAula] = aula.horarioFim.split(':').map(Number);
+    
+    const inicioDecimal = horaInicioAula + (minInicioAula / 60);
+    const fimDecimal = horaFimAula + (minFimAula / 60);
+    
+    const posicaoInicio = ((inicioDecimal - horaInicio) / periodoTotal) * 100;
+    const largura = ((fimDecimal - inicioDecimal) / periodoTotal) * 100;
+    
+    const aulaElement = document.createElement('div');
+    aulaElement.className = 'timeline-item';
+    aulaElement.textContent = aula.nome;
+    aulaElement.style.left = `${posicaoInicio}%`;
+    aulaElement.style.width = `${largura}%`;
+    aulaElement.title = `${aula.nome}\n${aula.horarioInicio} - ${aula.horarioFim}`;
+    
+    timeline.appendChild(aulaElement);
+}
+
 function atualizarGrade() {
     gradeHorarios.innerHTML = '';
     const aulas = sistemaAgendamento.getAulas();
@@ -103,17 +154,17 @@ function atualizarGrade() {
         
         cardSala.appendChild(cabecalhoSala);
 
+        const timeline = document.createElement('div');
+        timeline.className = 'timeline';
+        
+        criarMarcadoresHora(timeline);
+        
         const aulasNaSala = aulasPorSala[numeroSala];
         aulasNaSala.forEach(aula => {
-            const divAula = document.createElement('div');
-            divAula.className = 'item-aula';
-            divAula.innerHTML = `
-                <div class="nome-aula">${aula.nome}</div>
-                <div class="horario-aula">${aula.horarioInicio} - ${aula.horarioFim}</div>
-            `;
-            cardSala.appendChild(divAula);
+            posicionarAulaNaTimeline(aula, timeline);
         });
 
+        cardSala.appendChild(timeline);
         gradeHorarios.appendChild(cardSala);
     });
 
