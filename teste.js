@@ -117,4 +117,31 @@ function atualizarGrade() {
         mensagemVazia.textContent = 'Nenhuma aula agendada';
         gradeHorarios.appendChild(mensagemVazia);
     }
+
+    
 }
+
+function exibirMensagem(mensagem, sucesso) {
+    mensagemAviso.textContent = mensagem;
+    mensagemAviso.className = 'aviso ' + (sucesso ? 'sucesso' : 'erro');
+    setTimeout(() => {
+        mensagemAviso.className = 'aviso';
+    }, 3000);
+}
+
+formularioAula.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const nomeAula = document.getElementById('className').value;
+    const horarioInicio = document.getElementById('startTime').value;
+    const horarioFim = document.getElementById('endTime').value;
+
+    const novaAula = new Aula(nomeAula, horarioInicio, horarioFim);
+    const resultado = sistemaAgendamento.adicionarAula(novaAula);
+
+    exibirMensagem(resultado.mensagem, resultado.sucesso);
+    if (resultado.sucesso) {
+        atualizarGrade();
+        formularioAula.reset();
+    }
+});
