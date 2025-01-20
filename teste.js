@@ -1,4 +1,3 @@
-
 class Aula {
     constructor(nome, horarioInicio, horarioFim) {
         this.nome = nome;
@@ -12,6 +11,10 @@ class SistemaAgendamento {
     constructor() {
         this.aulas = [];
         this.salas = [];
+    }
+
+    getAulas() {
+        return this.aulas;
     }
 
     horarioParaMinutos(horario) {
@@ -32,7 +35,7 @@ class SistemaAgendamento {
         if (this.horarioParaMinutos(novaAula.horarioInicio) >= this.horarioParaMinutos(novaAula.horarioFim)) {
             return {
                 sucesso: false,
-                mensagem: "O horario de inicio deve ser anterior ao horario de fim."
+                mensagem: "O horário de início deve ser anterior ao horário de fim."
             };
         }
 
@@ -41,21 +44,24 @@ class SistemaAgendamento {
         this.aulas.sort((a, b) => this.horarioParaMinutos(a.horarioInicio) - this.horarioParaMinutos(b.horarioInicio));
 
         this.salas = [];
+        this.aulas.forEach(aula => aula.sala = null);
 
         for (const aula of this.aulas) {
             let salaAlocada = false;
 
             for (let i = 0; i < this.salas.length; i++) {
                 const ultimaAulaDaSala = this.salas[i][this.salas[i].length - 1];
-
+                
                 if (!this.temConflito(ultimaAulaDaSala, aula)) {
                     this.salas[i].push(aula);
+                    aula.sala = i;
                     salaAlocada = true;
                     break;
                 }
             }
 
             if (!salaAlocada) {
+                aula.sala = this.salas.length;
                 this.salas.push([aula]);
             }
         }
@@ -67,15 +73,15 @@ class SistemaAgendamento {
     }
 }
 
-const SistemaAgendamento = new SistemaAgendamento();
+const sistemaAgendamento = new SistemaAgendamento();
 
 const formularioAula = document.getElementById('formularioAula');
-const alertMessage = document.getElementById('mensagemAviso');
+const mensagemAviso = document.getElementById('mensagemAviso');
 const gradeHorarios = document.getElementById('gradeHorarios');
 
 function atualizarGrade() {
     gradeHorarios.innerHTML = '';
-    const aulas = SistemaAgendamento.getAulas();
+    const aulas = sistemaAgendamento.getAulas();
     
     const aulasPorSala = {};
     aulas.forEach(aula => {
@@ -117,8 +123,6 @@ function atualizarGrade() {
         mensagemVazia.textContent = 'Nenhuma aula agendada';
         gradeHorarios.appendChild(mensagemVazia);
     }
-
-    
 }
 
 function exibirMensagem(mensagem, sucesso) {

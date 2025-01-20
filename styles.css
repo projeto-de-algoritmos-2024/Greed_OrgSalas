@@ -66,7 +66,22 @@ input:focus {
     box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
 }
 
-.container-horarios{
+button {
+    background-color: #3498db;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+.container-horarios {
     overflow-x: auto;
     padding: 20px 0;
 }
@@ -76,4 +91,74 @@ input:focus {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
     padding: 20px 0;
+}
+
+.card-sala {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+}
+
+.cabecalho-sala {
+    background: #3498db;
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.titulo-sala {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.item-aula {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 10px;
+}
+
+.item-aula:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.nome-aula {
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.horario-aula {
+    color: #7f8c8d;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+
+.sala-vazia {
+    text-align: center;
+    color: #7f8c8d;
+    padding: 20px;
+    font-style: italic;
+}
+
+.aviso {
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    display: none;
+}
+
+.aviso.sucesso {
+    display: block;
+    background-color: #dff0d8;
+    color: #3c763d;
+    border: 1px solid #d6e9c6;
+}
+
+.aviso.erro {
+    display: block;
+    background-color: #f2dede;
+    color: #a94442;
+    border: 1px solid #ebccd1;
 }
