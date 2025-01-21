@@ -127,13 +127,11 @@ const formularioAula = document.getElementById('formularioAula');
 const mensagemAviso = document.getElementById('mensagemAviso');
 const gradeHorarios = document.getElementById('gradeHorarios');
 
-// Inputs de horário
 const startTimeHour = document.getElementById('startTimeHour');
 const startTimeMinute = document.getElementById('startTimeMinute');
 const endTimeHour = document.getElementById('endTimeHour');
 const endTimeMinute = document.getElementById('endTimeMinute');
 
-// Função para validar e formatar input numérico
 function validarInputNumerico(input, min, max) {
     let valor = parseInt(input.value);
     
@@ -154,7 +152,6 @@ function validarInputNumerico(input, min, max) {
     return true;
 }
 
-// Adiciona validação em tempo real
 startTimeHour.addEventListener('input', () => validarInputNumerico(startTimeHour, 0, 23));
 startTimeMinute.addEventListener('input', () => validarInputNumerico(startTimeMinute, 0, 59));
 endTimeHour.addEventListener('input', () => validarInputNumerico(endTimeHour, 0, 23));
@@ -255,20 +252,17 @@ formularioAula.addEventListener('submit', (e) => {
     e.preventDefault();
 
     const nomeAula = document.getElementById('className').value;
-    
-    // Pega os valores dos inputs de hora e minuto
+
     const horaInicio = parseInt(startTimeHour.value);
     const minutoInicio = parseInt(startTimeMinute.value);
     const horaFim = parseInt(endTimeHour.value);
     const minutoFim = parseInt(endTimeMinute.value);
 
-    // Valida se todos os valores são números válidos
     if (isNaN(horaInicio) || isNaN(minutoInicio) || isNaN(horaFim) || isNaN(minutoFim)) {
         exibirMensagem("Por favor, preencha todos os campos de horário corretamente.", false);
         return;
     }
 
-    // Formata os horários
     const horarioInicio = sistemaAgendamento.formatarHorario(horaInicio, minutoInicio);
     const horarioFim = sistemaAgendamento.formatarHorario(horaFim, minutoFim);
 

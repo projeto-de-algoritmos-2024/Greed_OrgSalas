@@ -65,11 +65,15 @@ h2 {
     margin-bottom: 15px;
 }
 
-label {
+.grupo-formulario label {
     display: block;
     margin-bottom: 5px;
     color: #34495e;
     font-weight: 500;
+}
+
+.grupo-formulario.horario label {
+    text-align: center;
 }
 
 input {
@@ -264,6 +268,7 @@ button:hover {
     display: flex;
     align-items: center;
     gap: 5px;
+    justify-content: center;
 }
 
 .time-input input {
