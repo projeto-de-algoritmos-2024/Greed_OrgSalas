@@ -47,19 +47,19 @@ Horário de Fim (formato HH:MM)
 Clique no botão "Adicionar Aula"
 2. Visualização das Aulas:
 As aulas adicionadas serão automaticamente organizadas em salas
-Cada sala é representada como uma coluna na grade horária
-O sistema usa um algoritmo ambicioso (greedy) para alocar as aulas da forma mais eficiente possível
-As aulas são exibidas como blocos coloridos na grade, mostrando:
-Nome da aula
-Horário de início e fim
-Sala alocada
+cada sala é representada como uma coluna na grade horária
+o sistema usa um algoritmo ambicioso (greedy) para alocar as aulas da forma mais eficiente possível
+as aulas são exibidas como blocos coloridos na grade, mostrando:
+nome da aula
+horário de início e fim
+sala alocada
 3. Gerenciamento de Conflitos:
 O sistema automaticamente aloca as aulas em diferentes salas quando há sobreposição de horários
-Se houver conflitos que não podem ser resolvidos, uma mensagem de aviso será exibida
+se houver conflitos que não podem ser resolvidos, uma mensagem de aviso será exibida
 4. Visualização da Grade:
 A grade horária mostra todas as aulas organizadas por sala
-É possível visualizar facilmente a distribuição das aulas ao longo do dia
-As salas são criadas dinamicamente conforme necessário
+é possível visualizar facilmente a distribuição das aulas ao longo do dia
+as salas são criadas dinamicamente conforme necessário
 ## Outros 
 O deploy do projeto também foi feito no gitpages e está disponível pelo link: https://projeto-de-algoritmos-2024.github.io/Greed_OrgSalas/
 
