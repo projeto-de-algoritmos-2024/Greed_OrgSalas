@@ -13,11 +13,15 @@
 O projeto tem como objetivo criar um sistema de agendamento de aulas que organiza os horários de forma eficiente, evitando conflitos e otimizando a alocação de salas. Os usuários podem cadastrar aulas informando nome, horário de início e términos. Após o cadastro, as aulas são alocadas automaticamente em diferentes salas, conforme necessário, e exibidas em uma grade horária visual com marcadores de tempo e representações gráficas das aulas.
 
 ## Screenshots
-![print1](/assets/PAimg1.jpeg).
+![print1](/assets/PAimg1.jpeg)
 
-![print2](/assets/PAimg2.jpeg).
+![print2](/assets/PAimg2.jpeg)
 
-![print3](/assets/PAimg3.jpeg).
+![print3](/assets/PAimg3.jpeg)
+
+## Vídeo da Apresentação
+
+<a href="https://youtu.be/mSHKq-c2PlY?si=0cIshLO4qkXoRjY1" target="_blank" rel="noopener noreferrer">Assista ao Vídeo da Apresentação</a>
 
 ## Instalação 
 **Linguagem**: JavaScript<br>
